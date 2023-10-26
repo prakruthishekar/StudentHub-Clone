@@ -1,0 +1,15 @@
+[Unit]
+Description=Your Java Application
+After=network.target
+
+[Service]
+User=prod
+Group=prodGroup
+WorkingDirectory=/  # Replace with the actual path to your JAR file
+ExecStart=/usr/bin/java -jar assignment1-0.0.1-SNAPSHOT.jar
+Restart=always
+RestartSec=10
+SyslogIdentifier=webapp
+
+[Install]
+WantedBy=multi-user.target

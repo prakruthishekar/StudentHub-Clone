@@ -1,0 +1,12 @@
+@Component
+public class ProfileLogger {
+
+    @Autowired
+    private Environment environment;
+
+    @PostConstruct
+    public void logActiveProfiles() {
+        String[] activeProfiles = environment.getActiveProfiles();
+        System.out.println("Active profiles: " + String.join(", ", activeProfiles));
+    }
+}
