@@ -61,7 +61,6 @@ jobs:
                   -Dspring.datasource.username="${{ secrets.MYSQL_USERNAME }}" \
                   -Dspring.datasource.password="${{ secrets.MYSQL_PASSWORD }}"
 
-
       - name: Display MySQL logs
         if: failure()
         run: docker logs mysql
