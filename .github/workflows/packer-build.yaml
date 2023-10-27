@@ -70,6 +70,11 @@ jobs:
 
       - name: Run Integration Tests and Build Artifact
         run: |
+          mvn test -Dspring.profiles.active=githubactions \
+                    -Dspring.datasource.url="jdbc:mysql://127.0.0.1:3306/${{ secrets.MYSQL_DATABASE }}?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true" \
+                    -Dspring.datasource.username="${{ secrets.MYSQL_USERNAME }}" \
+                    -Dspring.datasource.password="${{ secrets.MYSQL_PASSWORD }}"
+
           mvn package
 
       - name: Packer Init
