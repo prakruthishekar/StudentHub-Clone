@@ -49,7 +49,7 @@ jobs:
   
       - name: Build with Maven
         run: |
-          mvn clean install -DMYSQL_USERNAME="${MYSQL_USERNAME}" -DMYSQL_PASSWORD="${MYSQL_PASSWORD}"
+          mvn clean install -DskipTests
         working-directory: ${{ github.workspace }}
         
 

@@ -24,6 +24,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
@@ -49,6 +50,7 @@ jobs:
                   -Dspring.datasource.url="jdbc:mysql://127.0.0.1:3306/${{ secrets.MYSQL_DATABASE }}?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true" \
                   -Dspring.datasource.username="${{ secrets.MYSQL_USERNAME }}" \
                   -Dspring.datasource.password="${{ secrets.MYSQL_PASSWORD }}"
+       
 
       - name: Display MySQL logs
         if: failure()
