@@ -1,16 +1,17 @@
 [Unit]
-Description=Your Java Application
-After=network.target
+Description=CloudApp Spring Boot Application
+After=cloud-init.service
+Requires=cloud-init.service
+StartLimitIntervalSec=0
 
 [Service]
-User=prod
-Group=prodGroup
-WorkingDirectory=/  # Path where your JAR file is located
-ExecStart=/usr/bin/java -jar assignment1-0.0.1-SNAPSHOT.jar
+User=webappuser
+Group=webappgroup
+ExecStart=/usr/bin/java -jar /opt/webapp/assignment1-0.0.1-SNAPSHOT.jar
+SuccessExitStatus=143
+TimeoutStopSec=10
 Restart=always
-RestartSec=10
-SyslogIdentifier=webapp
-EnvironmentFile=-/etc/environment
+RestartSec=30
 
 [Install]
 WantedBy=multi-user.target

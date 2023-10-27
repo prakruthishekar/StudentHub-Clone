@@ -130,9 +130,10 @@ build {
       source      = "/home/runner/work/webapp/webapp/target/assignment1-0.0.1-SNAPSHOT.jar"
       destination = "~/"
     }
-    //comment this part to build packer locally
+
+    comment this part to build packer locally
     provisioner "file" {
-      source      = "/home/runner/work/webapp/webapp/systemd/webapp.service"
+      source      = "/home/runner/work/webapp/webapp/packer/webapp.service"
       destination = "~/"
     }
 
