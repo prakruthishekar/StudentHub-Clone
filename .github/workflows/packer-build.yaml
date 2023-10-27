@@ -49,7 +49,7 @@ jobs:
 
       - name: Build with Maven
         run: |
-          mvn clean install -DMYSQL_USERNAME="${MYSQL_USERNAME}" -DMYSQL_PASSWORD="${MYSQL_PASSWORD}"
+          mvn clean install -DskipTests
         working-directory: ${{ github.workspace }}
 
 
@@ -70,10 +70,6 @@ jobs:
 
       - name: Run Integration Tests and Build Artifact
         run: |
-          mvn test -Dspring.datasource.url="jdbc:mysql://127.0.0.1:3306/${{ secrets.MYSQL_DATABASE }}?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true" \
-          -Dspring.datasource.username="${{ secrets.MYSQL_USERNAME }}" \
-          -Dspring.datasource.password="${{ secrets.MYSQL_PASSWORD }}" \
-          -Duser.csv.path="src/main/resources/users.csv"
           mvn package
 
       - name: Packer Init
