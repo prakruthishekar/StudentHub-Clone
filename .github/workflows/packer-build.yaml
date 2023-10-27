@@ -6,11 +6,12 @@ jobs:
   integration-test-and-ami:
     runs-on: ubuntu-latest
 
+    
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-      MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
 
     services:
       mysql:
@@ -21,7 +22,7 @@ jobs:
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-
+    
 
     steps:
       - name: Checkout Code
@@ -46,12 +47,12 @@ jobs:
           wget https://releases.hashicorp.com/packer/1.7.3/packer_1.7.3_linux_amd64.zip
           unzip -o packer_1.7.3_linux_amd64.zip -d /usr/local/bin
           rm packer_1.7.3_linux_amd64.zip
-
+  
       - name: Build with Maven
         run: |
-          mvn clean install -DskipTests
+          mvn clean install -DMYSQL_USERNAME="${MYSQL_USERNAME}" -DMYSQL_PASSWORD="${MYSQL_PASSWORD}"
         working-directory: ${{ github.workspace }}
-
+        
 
       - name: Print Workspace Contents without artifact
         run: |
@@ -70,25 +71,24 @@ jobs:
 
       - name: Run Integration Tests and Build Artifact
         run: |
-          mvn test -Dspring.profiles.active=githubactions \
-                    -Dspring.datasource.url="jdbc:mysql://127.0.0.1:3306/${{ secrets.MYSQL_DATABASE }}?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true" \
-                    -Dspring.datasource.username="${{ secrets.MYSQL_USERNAME }}" \
-                    -Dspring.datasource.password="${{ secrets.MYSQL_PASSWORD }}"
-
-          mvn package
+            mvn test -Dspring.datasource.url="jdbc:mysql://127.0.0.1:3306/${{ secrets.MYSQL_DATABASE }}?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true" \
+            -Dspring.datasource.username="${{ secrets.MYSQL_USERNAME }}" \
+            -Dspring.datasource.password="${{ secrets.MYSQL_PASSWORD }}" \
+            -Duser.csv.path="src/main/resources/users.csv"
+            mvn package
 
       - name: Packer Init
         run: |
-          packer init packer
+            packer init packer
 
       - name: Print Contents of Artifact Directory
         run: |
-          ls -R ${{ github.workspace }}/target/
+            ls -R ${{ github.workspace }}/target/
 
       - name: Copy Artifact to Packer
         run: |
           cp -r ${{ github.workspace }}/target/*.jar ${{ github.workspace }}/packer/
-
+          
       - name: Print Contents of Packer
         run: |
           ls -R ${{ github.workspace }}/packer/
@@ -99,9 +99,9 @@ jobs:
 
       - name: Build AMI with Packer
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         run: |
           packer build -var 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -var 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -var 'MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}' packer/*.pkr.hcl
 

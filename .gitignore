@@ -1,3 +1,14 @@
+# IDE-specific files
+/.idea/           # IntelliJ IDEA
+*.iml             # IntelliJ IDEA module files
+*.ipr             # IntelliJ IDEA project files
+*.iws             # IntelliJ IDEA workspace files
+*.vscode/         # Visual Studio Code
+*.settings/       # Eclipse
+*.classpath       # Eclipse
+*.project         # Eclipse
+*.metadata        # Eclipse workspace
+
 # Compiled class file
 *.class
 
@@ -22,3 +33,14 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+target/
+.idea/
+
+
+
+# Maven dependencies (if somehow they get downloaded to the repo)
+!/repository/     # Maven downloads dependencies to this directory
+
+# OS generated
+.DS_Store         # macOS
