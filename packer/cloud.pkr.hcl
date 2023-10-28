@@ -80,7 +80,7 @@ build {
 
 
   provisioner "file" {
-  source      = "/home/runner/work/webapp/webapp/target/assignment1-0.0.1-SNAPSHOT.jar"
+  source      = "/home/runner/.m2/repository/com/cloudcomputing/assignment1/0.0.1-SNAPSHOT/assignment1-0.0.1-SNAPSHOT.jar"
   destination = "~/"
 }
   provisioner "file" {
