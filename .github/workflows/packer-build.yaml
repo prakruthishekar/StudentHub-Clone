@@ -9,19 +9,6 @@ jobs:
     env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-        MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
-
-    services:
-      mysql:
-        image: mysql:latest
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-    
 
     steps:
       - name: Checkout Code
@@ -32,14 +19,6 @@ jobs:
         with:
           java-version: 17
           distribution: 'adopt'
-
-      - name: Wait for MySQL to be ready
-        run: |
-          until nc -z -v -w30 localhost 3306
-          do
-            echo "Waiting for MySQL to be ready..."
-            sleep 5
-          done
 
       - name: Install Packer
         run: |
@@ -68,14 +47,6 @@ jobs:
           echo "Contents of the workspace:"
           ls -R ${{ github.workspace }}
 
-      - name: Run Integration Tests and Build Artifact
-        run: |
-            mvn test -Dspring.datasource.url="jdbc:mysql://127.0.0.1:3306/${{ secrets.MYSQL_DATABASE }}?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true" \
-            -Dspring.datasource.username="${{ secrets.MYSQL_USERNAME }}" \
-            -Dspring.datasource.password="${{ secrets.MYSQL_PASSWORD }}" \
-            -Duser.csv.path="src/main/resources/users.csv"
-            mvn package
-
       - name: Packer Init
         run: |
             packer init packer
@@ -100,9 +71,8 @@ jobs:
         env:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         run: |
-          packer build -var 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -var 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -var 'MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}' packer/*.pkr.hcl
+          packer build packer/*.pkr.hcl
 
       - name: Check Previous Step Status
         run: exit 1

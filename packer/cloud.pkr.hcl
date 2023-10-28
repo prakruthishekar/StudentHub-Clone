@@ -83,38 +83,33 @@ build {
   source      = "/home/runner/work/webapp/webapp/target/assignment1-0.0.1-SNAPSHOT.jar"
   destination = "~/"
 }
+  provisioner "file" {
+    source      = "packer/webapp.service"
+    destination = "/tmp/webapp.service"
+  }
 
 
   provisioner "shell" {
     inline = [
-      "sudo mkdir /opt/webapp",
-      "sudo mv ~/assignment1-0.0.1-SNAPSHOT.jar /opt/webapp",
+      "sudo apt-get update",
+      "sudo apt-get upgrade -y",
+      "sudo apt-get install -y openjdk-17-jdk",  # Install Java
+      "sudo apt-get install -y unzip",
     ]
   }
 
   provisioner "shell" {
-    environment_vars = [
-      "DEBIAN_FRONTEND=noninteractive",
-      "CHECKPOINT_DISABLE=1",
-    ]
-    inline = [
-      "sudo apt-get update",
-      "sudo apt-get upgrade -y",
-      "sudo apt-get install unzip",
-      "sudo apt-get install -y expect",
-      "sudo apt-get install -y openjdk-17-jdk",
-      "sudo apt-get install -y maven",
-      "sudo apt-get clean",
-      "sudo groupadd webappgroup",
-      "sudo useradd -s /bin/false -g webappgroup -d /opt/webappgroup -m webappuser",
-      "sudo mv ~/webapp.service /etc/systemd/system/",
-      "sudo chown -R webappuser:webappgroup /opt/webapp",              # Change ownership to webapp folder in home dir
-      "sudo chmod g+x /opt/webapp/assignment1-0.0.1-SNAPSHOT.jar", # Add execute permissions
-      "sudo systemctl daemon-reload",
-      "sudo systemctl enable webapp",
-      "sudo systemctl start webapp",
-      "sudo systemctl restart webapp",
-      "sudo systemctl stop webapp",
+  inline = [
+      "sudo mv /tmp/webapp.service /etc/systemd/system/webapp.service",  # Rename the service file
+      "sudo groupadd prodGroup",  # Create a group
+      "sudo useradd -s /bin/bash -G prodGroup prod",  # Create a user and add to the group
+      "sudo chown -R prod:prodGroup ~/",  # Change ownership of the application directory
+      // "cd /opt/webapp",  # Change to the application directory
+      "sudo chmod +x assignment1-0.0.1-SNAPSHOT.jar",  # Add execute permissions to the JAR file if needed
+      # Create a systemd service unit for your Java application
+      "sudo systemctl daemon-reload",  # Reload systemd to recognize the new service
+      "sudo systemctl enable webapp",  # Enable the Java application as a systemd service
+      "sudo systemctl start webapp",  # Start the Java application
     ]
   }
 }
