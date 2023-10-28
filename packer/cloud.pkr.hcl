@@ -73,7 +73,6 @@ build {
       destination = "~/"
     }
 
-
   provisioner "shell" {
     inline = [
       "sudo mkdir /opt/webapp",

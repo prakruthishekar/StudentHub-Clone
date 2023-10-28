@@ -7,7 +7,7 @@ StartLimitIntervalSec=0
 [Service]
 User=webappuser
 Group=webappgroup
-EnvironmentFile=/opt/webapp/.env
+EnvironmentFile=-/opt/webapp/.env
 ExecStart=/usr/bin/java -DDB_NAME=${DB_NAME} -DDB_USERNAME=${DB_USERNAME} -DDB_PASSWORD=${DB_PASSWORD} -DDB_HOST=${DB_HOST} -jar /opt/webapp/assignment1-0.0.1-SNAPSHOT.jar
 SuccessExitStatus=143
 TimeoutStopSec=10
