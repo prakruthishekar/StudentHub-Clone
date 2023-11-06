@@ -33,6 +33,7 @@ jobs:
         run: |
           echo "Checking MySQL connection..."
 
+
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
