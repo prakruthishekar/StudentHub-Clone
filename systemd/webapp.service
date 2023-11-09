@@ -13,7 +13,7 @@ SuccessExitStatus=143
 TimeoutStopSec=10
 Restart=always
 RestartSec=30
-StandardOutput=append:/var/logs/webapp.log
+StandardOutput=append:/var/logs/webapp/webapp.log
 
 [Install]
 WantedBy=cloud-init.target

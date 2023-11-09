@@ -123,8 +123,9 @@ build {
       "sudo systemctl restart webapp",
       "sudo systemctl stop webapp",
       // "sudo mkdir /var/log/webapp",
-      "sudo chown webappuser:webappgroup /var/log/",
-      "sudo chmod u+rwX,g+rwX,o+rX /var/log/",
+      "sudo mkdir /var/logs/webapp",
+      "sudo chown webappuser:webappgroup /var/logs/webapp",
+      "sudo chmod u+rwX,g+rwX,o+rX /var/logs/webapp",
       // Install and configure CloudWatch agent
       "wget https://s3.amazonaws.com/amazoncloudwatch-agent/debian/amd64/latest/amazon-cloudwatch-agent.deb",
       "sudo dpkg -i -E amazon-cloudwatch-agent.deb",
