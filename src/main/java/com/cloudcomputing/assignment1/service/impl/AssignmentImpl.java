@@ -64,7 +64,8 @@ public class AssignmentImpl implements AssignmentService {
             if (assignmentRepository.existsById(id)) {
                 assignmentRepository.removeById(id);
             } else {
-                throw new NoSuchElementException("Assignment not found");
+                return false;
+                // throw new NoSuchElementException("Assignment not found");
             }
             return true;
         } catch (NoSuchElementException e) {
@@ -122,6 +123,20 @@ public class AssignmentImpl implements AssignmentService {
         assignment.setAssignment_updated(timestamp);
         assignment.setCreatedBy(assignmentDto.getCreatedBy());
         return assignment;
+    }
+
+    public Optional<Assignment> findAssignmentById(UUID id) {
+        return assignmentRepository.findById(id);
+    }
+    
+    public boolean isAssignmentPresent(UUID id) {
+        Optional<Assignment> assignment = assignmentRepository.findById(id);
+        if(assignment.isPresent()){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public boolean isAuthorized(UUID id, String useName){

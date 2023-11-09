@@ -20,5 +20,8 @@ public interface AssignmentService {
     boolean updateAssignmentbyId(UUID id, AssignmentDto assignmentDto);
 
     boolean isAuthorized(UUID id, String userName);
+    
+    boolean isAssignmentPresent(UUID id);
+
 
 }

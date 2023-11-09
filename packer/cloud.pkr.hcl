@@ -32,7 +32,6 @@ variable "AWS_SECRET_ACCESS_KEY" {
   default = ""
 }
 
-
 variable "DB_HOST" {
   type    = string
   default = "your_default_db_host"
@@ -68,10 +67,30 @@ build {
       destination = "~/"
     }
     
-    provisioner "file" {
-      source      = "/home/runner/work/webapp-main/webapp-main/systemd/webapp.service"
-      destination = "~/"
-    }
+  provisioner "file" {
+    source      = "/home/runner/work/webapp-main/webapp-main/systemd/webapp.service"
+    destination = "~/"
+  }
+
+  provisioner "file" {
+    source      = "/home/runner/work/webapp-main/webapp-main/systemd/CloudWatchAgent.json"
+    destination = "~/"
+  }
+
+  // provisioner "file" {
+  //     source      = "target/assignment1-0.0.1-SNAPSHOT.jar"
+  //     destination = "~/"
+  //   }
+    
+  // provisioner "file" {
+  //   source      = "systemd/webapp.service"
+  //   destination = "~/"
+  // }
+
+  // provisioner "file" {
+  //   source      = "systemd/CloudWatchAgent.json"
+  //   destination = "~/"
+  // }
 
   provisioner "shell" {
     inline = [
@@ -103,6 +122,16 @@ build {
       "sudo systemctl start webapp",
       "sudo systemctl restart webapp",
       "sudo systemctl stop webapp",
+      // "sudo mkdir /var/log/webapp",
+      "sudo chown webappuser:webappgroup /var/log/",
+      "sudo chmod u+rwX,g+rwX,o+rX /var/log/",
+      // Install and configure CloudWatch agent
+      "wget https://s3.amazonaws.com/amazoncloudwatch-agent/debian/amd64/latest/amazon-cloudwatch-agent.deb",
+      "sudo dpkg -i -E amazon-cloudwatch-agent.deb",
+      "sudo systemctl start amazon-cloudwatch-agent",
+      "sudo systemctl enable amazon-cloudwatch-agent",
+      "sudo mv ~/CloudWatchAgent.json /opt/aws/amazon-cloudwatch-agent/etc/",
+      "sudo systemctl restart amazon-cloudwatch-agent"
     ]
   }
 }

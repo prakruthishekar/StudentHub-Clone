@@ -198,12 +198,9 @@ Once all the provisioner commands have been executed successfully, Packer will s
 Set your sql password in command line
 
 export DB_NAME=csye6225 
-
 export DB_USERNAME=root
-
 export DB_PASSWORD=12345678
 export DB_HOST=localhost:3306
-
 export DB_NAME=csye6225
 
 
