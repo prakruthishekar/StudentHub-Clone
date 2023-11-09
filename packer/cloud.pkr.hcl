@@ -63,17 +63,17 @@ build {
   sources = ["source.amazon-ebs.webapp-ami"]
 
   provisioner "file" {
-      source      = "/home/runner/work/webapp-main/webapp-main/target/assignment1-0.0.1-SNAPSHOT.jar"
+      source      = "/home/runner/work/webapp/webapp/target/assignment1-0.0.1-SNAPSHOT.jar"
       destination = "~/"
     }
     
   provisioner "file" {
-    source      = "/home/runner/work/webapp-main/webapp-main/systemd/webapp.service"
+    source      = "/home/runner/work/webapp/webapp/systemd/webapp.service"
     destination = "~/"
   }
 
   provisioner "file" {
-    source      = "/home/runner/work/webapp-main/webapp-main/systemd/CloudWatchAgent.json"
+    source      = "/home/runner/work/webapp/webapp/systemd/CloudWatchAgent.json"
     destination = "~/"
   }
 
