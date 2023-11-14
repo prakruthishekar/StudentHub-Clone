@@ -3,6 +3,7 @@ package com.cloudcomputing.assignment1.contoller;
 import com.cloudcomputing.assignment1.payload.AssignmentDto;
 import com.cloudcomputing.assignment1.payload.AssignmentResponseDto;
 import com.cloudcomputing.assignment1.service.AssignmentService;
+import com.cloudcomputing.assignment1.service.MetricServices;
 import com.cloudcomputing.assignment1.service.UserService;
 import com.cloudcomputing.assignment1.util.Util;
 
@@ -35,15 +36,19 @@ public class AssignmentController {
     @Autowired
     private AssignmentService assignmentService;
 
+    @Autowired
+    private MetricServices metricServices;
+
     @PostMapping
     public ResponseEntity<AssignmentResponseDto> createAssignment(
             @Valid @RequestBody AssignmentDto assignmentDto,
             @RequestHeader("Authorization") String headerValue,
             HttpServletRequest request){
-
+                
         // Check for query parameters
         if (!request.getParameterMap().isEmpty()) {
             logger.error("POST:/v1/assignments : BAD REQUEST", (Throwable)null);
+            metricServices.incrementCounter("createAssignment.bad_request");
             return ResponseEntity.badRequest()
                     .cacheControl(CacheControl.noCache())
                     .build();
@@ -52,9 +57,12 @@ public class AssignmentController {
         if(userService.isUserAuthenticated(headerValue)){
             String username = Util.getUserName(headerValue);
             assignmentDto.setCreatedBy(username);
+            logger.info("POST:/v1/assignments, Assignmnet created");
+            metricServices.incrementCounter("createAssignment.success"); 
             System.out.println(assignmentDto);
         }else {
             logger.error("POST:/v1/assignments,UNAUTHORIZED", (Throwable)null);
+            metricServices.incrementCounter("createAssignment.unauthorized");
             return  new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
 
@@ -66,16 +74,20 @@ public class AssignmentController {
             @RequestHeader("Authorization") String headerValue,
             @RequestBody(required = false) String requestBody,
             HttpServletRequest request) {
-
+        
+        metricServices.incrementCounter("getAllAssignments.get.request");
+        
         if (requestBody != null) {
             // Return a 400 Bad Request response if there is a request body
             logger.error("GET:/v1/assignments, BAD REQUEST", (Throwable)null);
+            metricServices.incrementCounter("getAllAssignments.get.bad_request");
             return ResponseEntity.badRequest()
                     .cacheControl(CacheControl.noCache()).build();
         }
         // Check for query parameters
         if (!request.getParameterMap().isEmpty()) {
             logger.error("GET:/v1/assignments, BAD REQUEST", (Throwable)null);
+            metricServices.incrementCounter("getAllAssignments.get.query_bad_request");
             return ResponseEntity.badRequest()
                     .cacheControl(CacheControl.noCache())
                     .build();
@@ -85,10 +97,12 @@ public class AssignmentController {
             String username = Util.getUserName(headerValue);
             List<AssignmentResponseDto> assignments = assignmentService.getAllAssignments(username).getAss();
             logger.info("GET:/v1/assignments, Assignmnet fetched");
+            metricServices.incrementCounter("getAllAssignments.get.success");
             return ResponseEntity.ok(assignments);
         } else {
             // If the user is not authenticated, return a 401 Unauthorized status code
             logger.error("GET:/v1/assignments, UNAUTHORIZED", (Throwable)null);
+            metricServices.incrementCounter("getAllAssignments.get.unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
@@ -99,10 +113,13 @@ public class AssignmentController {
             @RequestHeader("Authorization") String headerValue,
             @RequestBody(required = false) String requestBody,
             HttpServletRequest request) {
-
+        
+        metricServices.incrementCounter("getAssignmentById.get.request");
+        
         if (requestBody != null) {
             // Return a 400 Bad Request response if there is a request body
             logger.error("GET:/v1/assignments/{id}, BAD REQUEST", (Throwable)null);
+            metricServices.incrementCounter("getAssignmentById.get.query_bad_request");
             return ResponseEntity.badRequest()
                     .cacheControl(CacheControl.noCache()).build();
         }
@@ -110,6 +127,7 @@ public class AssignmentController {
         // Check for query parameters
         if (!request.getParameterMap().isEmpty()) {
             logger.error("GET:/v1/assignments/{id}, BAD REQUEST", (Throwable)null);
+            metricServices.incrementCounter("getAssignmentById.get.query_bad_request");
             return ResponseEntity.badRequest()
                     .cacheControl(CacheControl.noCache())
                     .build();
@@ -124,20 +142,24 @@ public class AssignmentController {
 
                 if (!assignment.isEmpty()) {
                     // Assignment exists, return its details
+                    metricServices.incrementCounter("getAssignmentById.get.success");
                     logger.info("GET:/v1/assignments/{id}, Assignmnet details fetched");
                     return ResponseEntity.ok(assignment);
                 } else {
                     // Assignment not found, return a 404 Not Found response
+                    metricServices.incrementCounter("getAssignmentById.get.not_found");
                     logger.error("GET:/v1/assignments/{id}, NOT FOUND", (Throwable)null);
                     return ResponseEntity.notFound().build();
                 }
             } else {
+                metricServices.incrementCounter("getAssignmentById.get.forbidden");
                 logger.error("GET:/v1/assignments/{id}, FORBIDDEN", (Throwable)null);
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .cacheControl(CacheControl.noCache())
                         .build();
             }
         } else {
+            metricServices.incrementCounter("getAssignmentById.get.unauthorized");
             logger.error("GET:/v1/assignments/{id}, UNAUTHORIZED", (Throwable)null);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .cacheControl(CacheControl.noCache())
@@ -154,8 +176,11 @@ public class AssignmentController {
 
         String username = Util.getUserName(headerValue);
 
+        metricServices.incrementCounter("updateAssignmentById.put.request");
+
         if (!userService.isUserAuthenticated(headerValue)) {
             logger.error("PUT:/v1/assignments/{id}, UNAUTHORIZED", (Throwable)null);
+            metricServices.incrementCounter("updateAssignmentById.put.unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .cacheControl(CacheControl.noCache())
                     .build();
@@ -163,6 +188,7 @@ public class AssignmentController {
 
         if (!assignmentService.isAuthorized(id, username)) {
              logger.error("PUT:/v1/assignments/{id}, FORBIDDEN", (Throwable)null);
+             metricServices.incrementCounter("updateAssignmentById.put.forbidden");
              return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .cacheControl(CacheControl.noCache())
                         .build();
@@ -172,9 +198,11 @@ public class AssignmentController {
 
         if (assignmentService.updateAssignmentbyId(id, assignmentDto)) {
             logger.info("PUT:/v1/assignments/{id}, Assignmen updated");
+            metricServices.incrementCounter("updateAssignmentById.put.success");
             return ResponseEntity.noContent().cacheControl(CacheControl.noCache()).build();
         }
         logger.error("PUT:/v1/assignments/{id}, NOT FOUND", (Throwable)null);
+        metricServices.incrementCounter("updateAssignmentById.put.not_found");
         return ResponseEntity.notFound().build();
     }
 
@@ -184,8 +212,12 @@ public class AssignmentController {
         @RequestHeader("Authorization") String headerValue,
         @RequestBody(required = false) String requestBody ) {
 
+        metricServices.incrementCounter("deleteAssignment.delete.request");
+
         if (requestBody != null) {
             // Return a 400 Bad Request response if there is a request body
+            metricServices.incrementCounter("deleteAssignment.delete.bad_request");
+            logger.error("DELETE:/v1/assignments/{id}, BAD_REQUEST", (Throwable)null);
             return ResponseEntity.badRequest()
                     .cacheControl(CacheControl.noCache()).build();
         }
@@ -194,6 +226,7 @@ public class AssignmentController {
 
         if (!userService.isUserAuthenticated(headerValue)) {
             logger.error("DELETE:/v1/assignments/{id}, UNAUTHORIZED", (Throwable)null);
+            metricServices.incrementCounter("deleteAssignment.delete.unauthorized");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .cacheControl(CacheControl.noCache())
                     .build();
@@ -203,6 +236,7 @@ public class AssignmentController {
 
             if (!assignmentService.isAuthorized(id, username)) {
              logger.error("DELETE:/v1/assignments/{id}, FORBIDDEN", (Throwable)null);
+             metricServices.incrementCounter("deleteAssignment.delete.forbidden");
              return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .cacheControl(CacheControl.noCache())
                         .build();
@@ -210,10 +244,14 @@ public class AssignmentController {
             
         }
         else {
+            logger.error("DELETE:/v1/assignments/{id}, NOT_FOUND", (Throwable)null);
+            metricServices.incrementCounter("deleteAssignment.delete.not_found");
             return ResponseEntity.notFound().build();
         }
 
         assignmentService.deleteAssignmentById(id);
+        logger.info("DELETE:/v1/assignments/{id}, Assignmen deleted");
+        metricServices.incrementCounter("deleteAssignment.delete.success");
         return ResponseEntity.noContent()
                             .cacheControl(CacheControl.noCache())
                             .build();
