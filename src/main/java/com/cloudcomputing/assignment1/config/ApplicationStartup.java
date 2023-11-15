@@ -20,29 +20,9 @@ public class ApplicationStartup {
     @Autowired
     private UserService userService;
     
-//    @Value("${user.csv.path}")
-//    private String csvpath;
-
     @EventListener(ContextRefreshedEvent.class)
     public void onApplicationEvent(ContextRefreshedEvent event) throws IOException {
         System.out.println("Order 1");
-        // userService.createUserFromCSV("src/main/resources/users.csv");
-
-        // Get the file URL from the classpath
-        // URL resourceURL = getClass().getClassLoader().getResource("users.csv");
-        // if(resourceURL != null) {
-        //     String path = resourceURL.getPath();
-        //     userService.createUserFromCSV(path);
-        // } else {
-        //     System.err.println("Unable to find users.csv on the classpath");
-        // }
-
-        // InputStream inputStream = getClass().getClassLoader().getResourceAsStream("users.csv");
-        // String filePath = getClass().getClassLoader().getResource("users.csv").getPath();
-        // System.out.println("File path" + filePath);
-        // userService.createUserFromCSV(filePath);
-        // System.out.println(inputStream);
-
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream("users.csv");
         // String filePath = getClass().getClassLoader().getResource("users.csv").getPath();
         if (inputStream != null) {

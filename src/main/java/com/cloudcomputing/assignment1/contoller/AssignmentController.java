@@ -44,11 +44,12 @@ public class AssignmentController {
             @Valid @RequestBody AssignmentDto assignmentDto,
             @RequestHeader("Authorization") String headerValue,
             HttpServletRequest request){
-                
+        
+        metricServices.incrementCounter("createAssignment.post.request");
         // Check for query parameters
         if (!request.getParameterMap().isEmpty()) {
             logger.error("POST:/v1/assignments : BAD REQUEST", (Throwable)null);
-            metricServices.incrementCounter("createAssignment.bad_request");
+            metricServices.incrementCounter("createAssignment.post.bad_request");
             return ResponseEntity.badRequest()
                     .cacheControl(CacheControl.noCache())
                     .build();
@@ -58,11 +59,11 @@ public class AssignmentController {
             String username = Util.getUserName(headerValue);
             assignmentDto.setCreatedBy(username);
             logger.info("POST:/v1/assignments, Assignmnet created");
-            metricServices.incrementCounter("createAssignment.success"); 
+            metricServices.incrementCounter("createAssignment.post.success"); 
             System.out.println(assignmentDto);
         }else {
             logger.error("POST:/v1/assignments,UNAUTHORIZED", (Throwable)null);
-            metricServices.incrementCounter("createAssignment.unauthorized");
+            metricServices.incrementCounter("createAssignment.post.unauthorized");
             return  new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         }
 
