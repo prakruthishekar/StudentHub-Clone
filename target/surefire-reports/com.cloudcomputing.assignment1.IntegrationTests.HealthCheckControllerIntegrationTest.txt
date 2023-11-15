@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.cloudcomputing.assignment1.IntegrationTests.HealthCheckControllerIntegrationTest
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.621 s - in com.cloudcomputing.assignment1.IntegrationTests.HealthCheckControllerIntegrationTest

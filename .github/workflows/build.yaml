@@ -24,6 +24,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Check MySQL Connection
+        env:
+          MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+          MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+          MYSQL_USER: ${{ secrets.MYSQL_USERNAME }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        run: |
+        
+
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:

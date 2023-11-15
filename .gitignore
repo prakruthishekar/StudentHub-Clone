@@ -37,6 +37,7 @@ replay_pid*
 
 target/
 .idea/
+var/
 
 # Maven dependencies (if somehow they get downloaded to the repo)
 !/repository/     # Maven downloads dependencies to this directory
