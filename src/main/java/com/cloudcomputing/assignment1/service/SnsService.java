@@ -17,10 +17,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class SnsService {
 
-    @Value("${sns.topic.arn}")
+    @Value("${snsTopicArn}")
     private String snsTopicArn;
 
-    @Value("${aws.region}")
+    @Value("${awsRegion}")
     private String awsRegion;
 
     private static final Logger logger = LoggerFactory.getLogger(SnsService.class);
@@ -28,8 +28,8 @@ public class SnsService {
     private final AmazonSNS snsClient;
     // snsService.publishToTopic(username, submissionDto.getSubmission_url(), submissionDto.getAssignment_id(), user.getFirstName(), user.getLastName());
    @Autowired
-    public SnsService(@Value("${aws.region}") String awsRegion, 
-                      @Value("${sns.topic.arn}") String snsTopicArn) {
+    public SnsService(@Value("${awsRegion}") String awsRegion, 
+                      @Value("${snsTopicArn}") String snsTopicArn) {
         this.snsClient = AmazonSNSClientBuilder.standard()
                                                .withRegion(Regions.fromName(awsRegion))
                                                .build();
