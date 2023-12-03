@@ -26,6 +26,10 @@ public class Assignment {
     private  Timestamp assignment_created;
     private Timestamp assignment_updated;
     private String createdBy;
+    private UUID submissionId;
+    private String submission_url;
+    private Timestamp submission_date;
+    private Timestamp submission_updated;
 
 //     No-arg constructor
     public Assignment() {
