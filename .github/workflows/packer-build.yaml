@@ -107,7 +107,7 @@ jobs:
       
           # Wait for the instance refresh to complete
           while true; do
-            STATUS=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name auto-scaling-group --instance-refresh-ids ${INSTANCE_REFRESH_ID} --query 'InstanceRefreshes[0].Status' --output text)
+            STATUS=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name $AUTO_SCALING_GROUP_NAME --instance-refresh-ids ${INSTANCE_REFRESH_ID} --query 'InstanceRefreshes[0].Status' --output text)
             if [ "$STATUS" == "Successful" ]; then
               echo "Instance refresh for Launch Template ID in Auto Scaling Group completed successfully."
               break
