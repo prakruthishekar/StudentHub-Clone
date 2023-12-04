@@ -104,6 +104,33 @@ jobs:
           aws autoscaling start-instance-refresh --auto-scaling-group-name $AUTO_SCALING_GROUP_NAME
           echo "Instance refresh for Launch template in ASG completed"      
       
+
+      - name: Instance refresh auto scale to use new launch template version
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DEMO_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DEMO_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AUTO_SCALING_GROUP_NAME: ${{ secrets.AUTO_SCALING_GROUP_NAME }}
+        run: |
+          INSTANCE_REFRESH_ID=$(aws autoscaling start-instance-refresh --auto-scaling-group-name $AUTO_SCALING_GROUP_NAME --query 'InstanceRefreshId' --output text)
+          echo "Instance refresh for Launch template ID in AS started with ID: ${INSTANCE_REFRESH_ID}"
+
+          # Wait for the instance refresh to complete
+          while true; do
+            STATUS=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name auto-scaling-group --instance-refresh-ids ${INSTANCE_REFRESH_ID} --query 'InstanceRefreshes[0].Status' --output text)
+            if [ "$STATUS" == "Successful" ]; then
+              echo "Instance refresh for Launch template ID in AS completed successfully."
+              break
+            elif [ "$STATUS" == "Failed" ]; then
+              echo "Instance refresh for Launch template ID in AS failed."
+              exit 1
+            else
+              echo "Waiting for instance refresh to complete. Current status: $STATUS"
+              sleep 60  # Adjust the sleep interval as needed
+            fi
+          done
+
+
       - name: Check Previous Step Status
         run: exit 1
         if: ${{ failure() }}
