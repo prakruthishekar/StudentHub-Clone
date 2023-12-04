@@ -45,16 +45,16 @@ variable "DB_PORT" {
 
 # https://www.packer.io/plugins/builders/amazon/ebs
 source "amazon-ebs" "webapp-ami" {
-    region  = var.aws_region
-    ami_name        = "debian-12-ami_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
-    ami_description = "AMI for Spring Boot Application with MySQL"
-    ami_regions = [var.aws_region]
-    ami_users = ["073745101099"]
-    instance_type = "t2.micro"
-    source_ami    = var.source_ami
-    ssh_username = var.ssh_username
-    access_key   = "${var.AWS_ACCESS_KEY_ID}"
-    secret_key   = "${var.AWS_SECRET_ACCESS_KEY}"
+  region          = var.aws_region
+  ami_name        = "debian-12-ami_${formatdate("YYYY_MM_DD_hh_mm_ss", timestamp())}"
+  ami_description = "AMI for Spring Boot Application with MySQL"
+  ami_regions     = [var.aws_region]
+  ami_users       = ["073745101099"]
+  instance_type   = "t2.micro"
+  source_ami      = var.source_ami
+  ssh_username    = var.ssh_username
+  access_key      = "${var.AWS_ACCESS_KEY_ID}"
+  secret_key      = "${var.AWS_SECRET_ACCESS_KEY}"
 
 }
 
@@ -62,11 +62,16 @@ build {
   name    = "debian-12-ami"
   sources = ["source.amazon-ebs.webapp-ami"]
 
+  post-processor "manifest" {
+    output     = "manifest.json"
+    strip_path = true
+  }
+
   provisioner "file" {
-      source      = "/home/runner/work/webapp/webapp/target/assignment1-0.0.1-SNAPSHOT.jar"
-      destination = "~/"
-    }
-    
+    source      = "/home/runner/work/webapp/webapp/target/assignment1-0.0.1-SNAPSHOT.jar"
+    destination = "~/"
+  }
+
   provisioner "file" {
     source      = "/home/runner/work/webapp/webapp/systemd/webapp.service"
     destination = "~/"
@@ -81,7 +86,7 @@ build {
   //     source      = "target/assignment1-0.0.1-SNAPSHOT.jar"
   //     destination = "~/"
   //   }
-    
+
   // provisioner "file" {
   //   source      = "systemd/webapp.service"
   //   destination = "~/"
@@ -115,7 +120,7 @@ build {
       "sudo groupadd webappgroup",
       "sudo useradd -s /bin/false -g webappgroup -d /opt/webappgroup -m webappuser",
       "sudo mv ~/webapp.service /etc/systemd/system/",
-      "sudo chown -R webappuser:webappgroup /opt/webapp",              # Change ownership to webapp folder in home dir
+      "sudo chown -R webappuser:webappgroup /opt/webapp",          # Change ownership to webapp folder in home dir
       "sudo chmod g+x /opt/webapp/assignment1-0.0.1-SNAPSHOT.jar", # Add execute permissions
       "sudo systemctl daemon-reload",
       "sudo systemctl enable webapp",
