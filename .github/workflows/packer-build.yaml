@@ -92,43 +92,34 @@ jobs:
           echo "LAUNCH_TEMPLATE_NAME: $LAUNCH_TEMPLATE_NAME"
           echo "SOURCE_VERSION: $SOURCE_VERSION"
           aws ec2 create-launch-template-version --launch-template-name $LAUNCH_TEMPLATE_NAME --source-version $SOURCE_VERSION --launch-template-data '{"ImageId":"${{env.AMI_ID}}"}'
-          echo "Launch template version created"
-        
-      - name: Instance refresh auto scale use new Launch template version
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DEMO_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DEMO_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AUTO_SCALING_GROUP_NAME: ${{ secrets.AUTO_SCALING_GROUP_NAME }}
-        run: |
-          aws autoscaling start-instance-refresh --auto-scaling-group-name $AUTO_SCALING_GROUP_NAME
-          echo "Instance refresh for Launch template in ASG completed"      
-      
+          echo "Launch template version created"      
 
-      - name: Instance refresh auto scale to use new launch template version
+      - name: Start Instance Refresh for Auto Scaling Group with New Launch Template Version
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DEMO_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DEMO_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AUTO_SCALING_GROUP_NAME: ${{ secrets.AUTO_SCALING_GROUP_NAME }}
         run: |
+          # Start an instance refresh for the Auto Scaling Group
           INSTANCE_REFRESH_ID=$(aws autoscaling start-instance-refresh --auto-scaling-group-name $AUTO_SCALING_GROUP_NAME --query 'InstanceRefreshId' --output text)
-          echo "Instance refresh for Launch template ID in AS started with ID: ${INSTANCE_REFRESH_ID}"
-
+          echo "Instance refresh for Launch Template ID in Auto Scaling Group started with ID: ${INSTANCE_REFRESH_ID}"
+      
           # Wait for the instance refresh to complete
           while true; do
             STATUS=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name auto-scaling-group --instance-refresh-ids ${INSTANCE_REFRESH_ID} --query 'InstanceRefreshes[0].Status' --output text)
             if [ "$STATUS" == "Successful" ]; then
-              echo "Instance refresh for Launch template ID in AS completed successfully."
+              echo "Instance refresh for Launch Template ID in Auto Scaling Group completed successfully."
               break
             elif [ "$STATUS" == "Failed" ]; then
-              echo "Instance refresh for Launch template ID in AS failed."
+              echo "Instance refresh for Launch Template ID in Auto Scaling Group failed."
               exit 1
             else
               echo "Waiting for instance refresh to complete. Current status: $STATUS"
               sleep 60  # Adjust the sleep interval as needed
             fi
           done
+        
 
 
       - name: Check Previous Step Status
