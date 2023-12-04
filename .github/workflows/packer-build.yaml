@@ -89,9 +89,11 @@ jobs:
           SOURCE_VERSION: ${{ secrets.SOURCE_VERSION }}
           AUTO_SCALING_GROUP_NAME: ${{ secrets.AUTO_SCALING_GROUP_NAME }}
         run: |
+          echo "LAUNCH_TEMPLATE_NAME: $LAUNCH_TEMPLATE_NAME"
+          echo "SOURCE_VERSION: $SOURCE_VERSION"
           aws ec2 create-launch-template-version --launch-template-name $LAUNCH_TEMPLATE_NAME --source-version $SOURCE_VERSION --launch-template-data '{"ImageId":"${{env.AMI_ID}}"}'
           echo "Launch template version created"
-      
+        
       - name: Instance refresh auto scale use new Launch template version
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DEMO_ACCESS_KEY_ID }}

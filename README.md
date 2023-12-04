@@ -13,19 +13,6 @@ This Spring Boot web application provides functionality for managing assignments
   - [Features](#features)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
-- [Usage](#usage)
-  - [Authentication](#authentication)
-  - [API Endpoints](#api-endpoints)
-    - [Authenticated Endpoints](#authenticated-endpoints)
-      - [GET /v1/assignments](#get-v1assignments)
-      - [POST /v1/assignments](#post-v1assignments)
-      - [GET /v1/assignments/{id}](#get-v1assignmentsid)
-      - [DELETE /v1/assignments/{id}](#delete-v1assignmentsid)
-      - [PUT /v1/assignments/{id}](#put-v1assignmentsid)
-    - [Public Endpoint](#public-endpoint)
-      - [GET /healthz](#get-healthz)
-- [Build custom machines images that can be to create virtual machines in cloud using Pulumi for Infrastructure as Code.](#build-custom-machines-images-that-can-be-to-create-virtual-machines-in-cloud-using-pulumi-for-infrastructure-as-code)
-- [Steps to install MySQL in Debian](#steps-to-install-mysql-in-debian)
 
 ## Features
 
@@ -202,10 +189,8 @@ export DB_NAME=csye6225
 export DB_USERNAME=root
 export DB_PASSWORD=12345678
 export SNS_ARN=arn:aws:sns:us-east-1:226534876078:mySNSTopic-6c2cec1
-export SNS_ARN=arn:aws:sns:us-east-1:226534876078:mySNSTopic-6c2cec1
 export AWS_REGION=us-east-1
 packer validate cloud.pkr.hcl
-
 
 
 
@@ -219,3 +204,13 @@ sudo chmod 600 /swapfile
 sudo mkswap /swapfile
 sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
+
+# Import SSL/Tls certificate:
+
+The AWS CLI command you provided is used to import an SSL/TLS certificate into AWS Certificate Manager (ACM). ACM is a service provided by AWS for managing SSL/TLS certificates that are used to secure web applications and services.
+
+```
+aws acm import-certificate --certificate fileb://Certificate.pem \
+      --certificate-chain fileb://CertificateChain.pem \
+      --private-key fileb://PrivateKey.pem
