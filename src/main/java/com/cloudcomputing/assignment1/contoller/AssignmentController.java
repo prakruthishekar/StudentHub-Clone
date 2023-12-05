@@ -30,7 +30,7 @@ import java.util.UUID;
 
 
 @RestController
-@RequestMapping("/v1/assignments")
+@RequestMapping("/v2/assignments")
 @Validated
 public class AssignmentController {
 

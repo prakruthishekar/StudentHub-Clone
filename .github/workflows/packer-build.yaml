@@ -111,6 +111,9 @@ jobs:
             if [ "$STATUS" == "Successful" ]; then
               echo "Instance refresh for Launch Template ID in Auto Scaling Group completed successfully."
               break
+            elif [ "$STATUS" == "Cancelled" ]; then
+              echo "Instance refresh for Launch Template ID in Auto Scaling Group failed."
+              exit 1
             elif [ "$STATUS" == "Failed" ]; then
               echo "Instance refresh for Launch Template ID in Auto Scaling Group failed."
               exit 1
